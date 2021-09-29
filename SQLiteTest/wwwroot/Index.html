@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <input type="button" name="name" value="Test" id="btnTest" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        //$(document).ready(function () {
+        //    $('#btnTest').on('click', function () {
+
+        //        let email = 'demo@user.com';
+        //        let password = "demouser1";
+        //        $.ajax({
+        //            url: 'https://localhost:44360/api/Users/3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        //            type: "GET",
+        //            contentType: "application/json",
+        //            dataType: "json",
+        //            success: function (result) {
+
+        //            },
+        //            error: function (err) {
+        //                if (err.status == 401) {
+        //                    alert("Eposta veya şifre hatalı ya da bu sayfaya talep gönderme yetkiniz yok. ");
+        //                }
+        //            }
+        //        });
+        //    });
+        //});
+        $(document).ready(function () {
+            $('#btnTest').on('click', function () {
+
+                let username = 'enduser1';
+                let password = "enduser1";
+                $.ajax({
+                    url: 'https://localhost:44360/api/Users/85b9233e-5960-4182-81ff-716c4d5f5280',
+                    type: "GET",
+                    contentType: "application/json",
+                    dataType: "json",
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(username + ':' + password)
+                    },
+                    success: function (result) {
+                        alert("Giriş yaptı");
+                    },
+                    error: function (err) {
+                        if (err.status == 401) {
+                            alert("Eposta veya şifre hatalı ya da bu sayfaya talep gönderme yetkiniz yok. ");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
