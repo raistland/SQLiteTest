@@ -8,8 +8,7 @@ namespace SQLiteTest.Models
 {
     public class User
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; } 
+        public int Id { get; set; } 
         public string Name { get; set; }
         public string Username { get; set; }
         public Boolean IsAdmin { get; set; }

@@ -33,7 +33,7 @@ namespace SQLiteTest.Controllers
         // GET: api/Users/5
         [Authorize(AuthenticationSchemes = "Basic")]       
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +60,7 @@ namespace SQLiteTest.Controllers
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.Id)
             {
@@ -115,7 +115,7 @@ namespace SQLiteTest.Controllers
             return NoContent();
         }
 
-        private bool UserExists(Guid id)
+        private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
         }
