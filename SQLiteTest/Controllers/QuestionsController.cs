@@ -25,14 +25,14 @@ namespace SQLiteTest.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
         {
-            return await _context.Questions.ToListAsync();
+            return await _context.Questions.Include(x=>x.Answers).ToListAsync();
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Question>> GetQuestion(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
+            var question = await _context.Questions.Include(x=>x.Answers).FirstOrDefaultAsync(i=>i.Id == id);
 
             if (question == null)
             {

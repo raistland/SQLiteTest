@@ -8,7 +8,7 @@ using SQLiteTest;
 namespace SQLiteTest.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20211001114004_MigrationPoll")]
+    [Migration("20211001122042_MigrationPoll")]
     partial class MigrationPoll
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

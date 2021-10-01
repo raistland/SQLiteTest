@@ -38,10 +38,13 @@ namespace SQLiteTest
                 });
             });
 
+            
+
             services.AddAuthentication("Basic").AddScheme<BasicAuthenticationOption, BasicAuthenticationHandler>("Basic", null);
             services.AddTransient<IAuthenticationHandler, BasicAuthenticationHandler>();
 
             services.AddControllers();
+            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
 
             services.AddTransient<DataContext>();
             services.AddDbContext<DataContext>(k => { k.UseSqlite(Configuration.GetConnectionString("DefaultConnection")); });
@@ -66,6 +69,8 @@ namespace SQLiteTest
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            
 
             app.UseCors("CorsPolicy");
 
