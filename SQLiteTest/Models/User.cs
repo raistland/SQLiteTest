@@ -13,5 +13,6 @@ namespace SQLiteTest.Models
         public string Username { get; set; }
         public Boolean IsAdmin { get; set; }
         public string Password { get; set; }
+        public ICollection<UserAnswers> UserAnswers { get; set; }
     }
 }

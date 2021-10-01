@@ -65,11 +65,11 @@ namespace SQLiteTest.Security
             };
 
 
-            ClaimsIdentity identity = new ClaimsIdentity(claims, Scheme.Name);
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new(claims, Scheme.Name);
+            ClaimsPrincipal principal = new(identity);
 
 
-            AuthenticationTicket ticket = new AuthenticationTicket(principal, Scheme.Name);
+            AuthenticationTicket ticket = new(principal, Scheme.Name);
             return Task.FromResult(AuthenticateResult.Success(ticket));
         }
     }

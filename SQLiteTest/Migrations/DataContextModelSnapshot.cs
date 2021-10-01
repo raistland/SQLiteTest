@@ -45,7 +45,7 @@ namespace SQLiteTest.Migrations
                             Id = 1,
                             IsTrue = false,
                             QuestionID = 1,
-                            SelectedTime = 0,
+                            SelectedTime = 1,
                             Text = "Cevap 1"
                         },
                         new
@@ -113,6 +113,50 @@ namespace SQLiteTest.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsAdmin = true,
+                            Name = "Admin User",
+                            Password = "admin",
+                            Username = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsAdmin = false,
+                            Name = "End User 1",
+                            Password = "enduser1",
+                            Username = "enduser"
+                        });
+                });
+
+            modelBuilder.Entity("SQLiteTest.Models.UserAnswers", b =>
+                {
+                    b.Property<int>("AnswerID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AnswerID", "UserID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserAnswers");
+
+                    b.HasData(
+                        new
+                        {
+                            AnswerID = 1,
+                            UserID = 2,
+                            Id = 0
+                        });
                 });
 
             modelBuilder.Entity("SQLiteTest.Models.Answer", b =>
@@ -126,9 +170,38 @@ namespace SQLiteTest.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("SQLiteTest.Models.UserAnswers", b =>
+                {
+                    b.HasOne("SQLiteTest.Models.Answer", "Answer")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("AnswerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SQLiteTest.Models.User", "User")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SQLiteTest.Models.Answer", b =>
+                {
+                    b.Navigation("UserAnswers");
+                });
+
             modelBuilder.Entity("SQLiteTest.Models.Question", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("SQLiteTest.Models.User", b =>
+                {
+                    b.Navigation("UserAnswers");
                 });
 #pragma warning restore 612, 618
         }

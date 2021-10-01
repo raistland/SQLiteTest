@@ -13,6 +13,7 @@ namespace SQLiteTest.Models
 
         public int QuestionID { get; set; }        
         public Question Question { get; set; }
+        public ICollection<UserAnswers> UserAnswers { get; set; }
 
     }
 }
