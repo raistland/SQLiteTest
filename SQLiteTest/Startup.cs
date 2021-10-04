@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SQLiteTest.Security;
 using Microsoft.AspNetCore.Authentication;
 using SQLiteTest.Controllers;
+using System.Threading.Tasks;
 
 namespace SQLiteTest
 {
@@ -31,6 +32,7 @@ namespace SQLiteTest
                     .AllowAnyHeader();
                 });
             });
+
             
 
             services.AddAuthentication("Basic").AddScheme<BasicAuthenticationOption, BasicAuthenticationHandler>("Basic", null);
@@ -42,6 +44,15 @@ namespace SQLiteTest
             services.AddTransient<DataContext>();
             services.AddDbContext<DataContext>(k => { k.UseSqlite(Configuration.GetConnectionString("DefaultConnection")); });
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -62,12 +73,11 @@ namespace SQLiteTest
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            
-            
-
             app.UseCors("CorsPolicy");
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>

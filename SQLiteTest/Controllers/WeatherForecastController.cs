@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace SQLiteTest.Controllers
             _logger = logger;
         }
 
+        
+        [Authorize(AuthenticationSchemes = "Basic")]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {

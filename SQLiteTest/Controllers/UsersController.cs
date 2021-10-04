@@ -31,7 +31,8 @@ namespace SQLiteTest.Controllers
         }
 
         // GET: api/Users/5
-        [Authorize(AuthenticationSchemes = "Basic")]       
+        [Authorize(AuthenticationSchemes = "Basic")]
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -98,7 +99,7 @@ namespace SQLiteTest.Controllers
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
-
+        [Authorize(Roles = "Admin")]
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
