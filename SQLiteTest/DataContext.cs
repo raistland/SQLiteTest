@@ -76,26 +76,21 @@ namespace SQLiteTest
                 (new User
 
                 {
-                    Id = 1,
                     IsAdmin = true,
                     Name = "Admin User",
                     Password = "admin",
-                    Username = "admin"
+                    UserName = "admin"
                 },
                 new User
                 {
-                    Id = 2,
                     IsAdmin = false,
                     Name = "End User 1",
                     Password = "enduser1",
-                    Username = "enduser"
+                    UserName  = "enduser"
                 }
                 );
 
-            modelBuilder.Entity<UserAnswers>()
-                .HasData
-                (
-                new UserAnswers { AnswerID = 1, UserID = 2 });
+            
         }
     }
 }

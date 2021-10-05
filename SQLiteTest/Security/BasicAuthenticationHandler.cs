@@ -51,7 +51,7 @@ namespace SQLiteTest.Security
             string username = parts[0];
             string password = parts[1];
 
-            User user = context.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
+            User user = context.Users.FirstOrDefault(x => x.UserName == username && x.Password == password);
             if (user == null)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Giriş Bilgileri Hatalı"));
@@ -64,7 +64,7 @@ namespace SQLiteTest.Security
                 ///
                 /// Rol tipi burda kontrol edildi.
                 ///
-                new Claim(ClaimTypes.Role,user.IsAdmin ? "Admin" : "EndUser" )
+                new Claim(ClaimTypes.Role,user.IsAdmin ? UserRoles.Admin : UserRoles.EndUser )
             };
 
 

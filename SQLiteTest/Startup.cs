@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SQLiteTest.Security;
-using Microsoft.AspNetCore.Authentication;
 using SQLiteTest.Controllers;
 using System.Threading.Tasks;
+using SQLiteTest.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SQLiteTest
 {
@@ -24,8 +29,10 @@ namespace SQLiteTest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
                     policy
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
@@ -33,16 +40,33 @@ namespace SQLiteTest
                 });
             });
 
-            
+            services.AddDefaultIdentity<IdentityUser>()
+                  .AddRoles<IdentityRole>()
+                  .AddEntityFrameworkStores<DataContext>();
 
-            services.AddAuthentication("Basic").AddScheme<BasicAuthenticationOption, BasicAuthenticationHandler>("Basic", null);
-            services.AddTransient<IAuthenticationHandler, BasicAuthenticationHandler>();
+            // services.AddAuthentication("Basic").AddScheme<BasicAuthenticationOption, BasicAuthenticationHandler>("Basic", null);
+            //  services.AddTransient<IAuthenticationHandler, BasicAuthenticationHandler>();
 
             services.AddControllers();
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
 
             services.AddTransient<DataContext>();
             services.AddDbContext<DataContext>(k => { k.UseSqlite(Configuration.GetConnectionString("DefaultConnection")); });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+               .AddJwtBearer(o => {
+                   o.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       ValidIssuer = Configuration["Jwt:Issuer"],
+                       ValidAudience = Configuration["Jwt:Issuer"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+
+                   };
+               });
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -58,6 +82,9 @@ namespace SQLiteTest
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SQLiteTest", Version = "v1" });
             });
+;
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +111,7 @@ namespace SQLiteTest
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }
