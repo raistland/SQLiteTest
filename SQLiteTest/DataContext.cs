@@ -14,6 +14,7 @@ namespace SQLiteTest
         public DbSet<Question> Questions { get; set; }
         public DbSet<UserAnswers> UserAnswers { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Answer>()

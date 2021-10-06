@@ -40,9 +40,13 @@ namespace SQLiteTest
                 });
             });
 
-            services.AddDefaultIdentity<IdentityUser>()
-                  .AddRoles<IdentityRole>()
-                  .AddEntityFrameworkStores<DataContext>();
+            services.AddIdentity<User, IdentityRole>(
+                options =>
+                {
+                    options.User.RequireUniqueEmail = false;
+                })
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
 
             // services.AddAuthentication("Basic").AddScheme<BasicAuthenticationOption, BasicAuthenticationHandler>("Basic", null);
             //  services.AddTransient<IAuthenticationHandler, BasicAuthenticationHandler>();
@@ -52,6 +56,8 @@ namespace SQLiteTest
 
             services.AddTransient<DataContext>();
             services.AddDbContext<DataContext>(k => { k.UseSqlite(Configuration.GetConnectionString("DefaultConnection")); });
+
+            string s = Configuration["Jwt:Issuer"];
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(o => {

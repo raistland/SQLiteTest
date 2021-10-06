@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SQLiteTest;
+using SQLiteTest.API.DTO;
 using SQLiteTest.Models;
 
 namespace SQLiteTest.Controllers
@@ -23,137 +24,142 @@ namespace SQLiteTest.Controllers
     public class UsersController : ControllerBase
     {
         private readonly DataContext _context;
-
-        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public UsersController(DataContext context)
+        public UsersController(SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager,
+            IConfiguration config
+            , DataContext context)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _config = config;
             _context = context;
         }
 
-      
-        // GET: api/Users
-        [Route("GetUsers")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        {
-            return await _context.Users.ToListAsync();
-        }
 
-        // GET: api/Users/5
-        [Authorize(AuthenticationSchemes = "Basic")]
+        //// GET: api/Users
+        //[Route("GetUsers")]
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        //{
+        //    return await _context.Users.ToListAsync();
+        //}
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            ClaimsIdentity claimsIdentity = User.Identity as ClaimsIdentity;
-            string currentUserId = claimsIdentity.Claims.FirstOrDefault(k => k.Type == ClaimTypes.NameIdentifier)?.Value;
+        //// GET: api/Users/5
+        //[Authorize(AuthenticationSchemes = "Basic")]
 
-            if (currentUserId != id.ToString())
-            {
-                return BadRequest("Kimliğiniz tespit edilemedi");
-            }
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<User>> GetUser(string id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    ClaimsIdentity claimsIdentity = User.Identity as ClaimsIdentity;
+        //    string currentUserId = claimsIdentity.Claims.FirstOrDefault(k => k.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            var user = await _context.Users.FindAsync(id);
+        //    if (currentUserId != id.ToString())
+        //    {
+        //        return BadRequest("Kimliğiniz tespit edilemedi");
+        //    }
 
-            if (user == null)
-            {
-                return NotFound();
-            }
+        //    var user = await _context.Users.FindAsync(id);
 
-            return user;
-        }
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
+        //    return user;
+        //}
 
-            _context.Entry(user).State = EntityState.Modified;
+        //// PUT: api/Users/5
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutUser(string id, User user)
+        //{
+        //    if (id != user.Id)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    _context.Entry(user).State = EntityState.Modified;
 
-            return NoContent();
-        }
-        //[Authorize(Policy = "UserClaimPositionPolicy")]
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!UserExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-        [Authorize(Roles = UserRoles.Admin)]
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+        //    return NoContent();
+        //}
+        ////[Authorize(Policy = "UserClaimPositionPolicy")]
+        //// POST: api/Users
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPost]
+        //public async Task<ActionResult<User>> PostUser(User user)
+        //{
+        //    _context.Users.Add(user);
+        //    await _context.SaveChangesAsync();
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+        //    return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        //}
+        //[Authorize(Roles = UserRoles.Admin)]
+        //// DELETE: api/Users/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteUser(Guid id)
+        //{
+        //    var user = await _context.Users.FindAsync(id);
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return NoContent();
-        }
+        //    _context.Users.Remove(user);
+        //    await _context.SaveChangesAsync();
 
-        private bool UserExists(string id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
+        //    return NoContent();
+        //}
+
+        //private bool UserExists(string id)
+        //{
+        //    return _context.Users.Any(e => e.Id == id);
+        //}
 
         [Route("login")]
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] User userDTO)
+        public async Task<IActionResult> Login([FromBody] UserDTO userDTO)
         {
             var location = GetControllerActionNames();
             try
             {
-                var username = userDTO.Email;
+                var username = userDTO.EmailAddress;
                 var password = userDTO.Password;
                 var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
                 if (result.Succeeded)
                 {
-                    
+                   
                     var user = await _userManager.FindByEmailAsync(username);
-                    
+                  
                     var tokenString = await GenerateJSONWebToken(user);
                     return Ok(new { token = tokenString });
                 }
-               
+              
                 return Unauthorized(userDTO);
             }
             catch (Exception e)
@@ -171,7 +177,7 @@ namespace SQLiteTest.Controllers
         }
 
         private ObjectResult InternalError(string message)
-        {           
+        {
             return StatusCode(500, "Something went wrong. Please contact the Administrator");
         }
 
